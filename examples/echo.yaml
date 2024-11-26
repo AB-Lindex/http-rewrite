@@ -1,0 +1,22 @@
+listen: 8081
+apis:
+  - input:
+      methods:
+        - GET
+        - PUT
+      path: /{lang}/{path...}
+    proxy:
+      scheme: http
+      host: localhost
+      port: 10000
+      path: /${path}
+      query:
+        set:
+          lang: "${lang}"
+
+  - input:
+      method: ALL
+      path: /{path...}
+    http:
+      status: 402
+      body: "Unknown"

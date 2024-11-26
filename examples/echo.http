@@ -1,0 +1,25 @@
+@base=http://localhost:8081
+###
+GET {{base}}/test1/test2
+###
+GET {{base}}/test1/test2/test3
+###
+GET {{base}}/test1/test2/test3/test4
+
+###
+GET {{base}}/test1/test2
+  ?arg1=1
+###
+GET {{base}}/test1/test2
+  ?arg1=1
+  &lang=oldLang
+###
+PUT {{base}}/test1/test2
+  ?arg1=1
+  &lang=oldLang
+###
+
+POST http://localhost:10000/test1/test2
+  ?arg1=1
+  &lang=oldLang
+###
