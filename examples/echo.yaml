@@ -4,19 +4,19 @@ apis:
       methods:
         - GET
         - PUT
-      path: /{lang}/{path...}
+      path: /{lang:[a-z]{2}}/*
     proxy:
       scheme: http
       host: localhost
       port: 10000
-      path: /${path}
+      path: /${*}
       query:
         set:
           lang: "${lang}"
 
   - input:
       method: ALL
-      path: /{path...}
+      path: /*
     http:
       status: 402
       body: "Unknown"

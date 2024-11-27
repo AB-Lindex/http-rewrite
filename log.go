@@ -8,6 +8,5 @@ import (
 )
 
 func init() {
-	slog.SetLogLoggerLevel(slog.LevelDebug)
-	slog.SetDefault(slog.New(slog2.New(os.Stdout, nil)))
+	slog.SetDefault(slog.New(slog2.New(os.Stdout, &slog2.Options{Level: slog.LevelDebug})))
 }

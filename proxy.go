@@ -8,6 +8,7 @@ import (
 
 	"log/slog"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/ninlil/envsubst"
 )
 
@@ -48,7 +49,7 @@ type ProxyQuery struct {
 
 var cfg proxyConfig
 
-func (api *ProxyAPI) Handle() error {
+func (api *ProxyAPI) Handle(r *chi.Mux) error {
 
 	if api.Input.Method != "" && len(api.Input.Methods) > 0 {
 		return fmt.Errorf("only one of method or methods can be specified")
@@ -100,12 +101,13 @@ func (api *ProxyAPI) Handle() error {
 
 	if all {
 		slog.Info("Registering wildcard-API", "pattern", api.Input.Path)
-		http.HandleFunc(api.Input.Path, handler)
+		r.HandleFunc(api.Input.Path, handler)
 	} else {
 		for m := range methods {
-			pattern := fmt.Sprintf("%s %s", m, api.Input.Path)
-			slog.Info("Registering API", "pattern", pattern)
-			http.HandleFunc(pattern, handler)
+			// pattern := fmt.Sprintf("%s %s", m, api.Input.Path)
+			// slog.Info("Registering API", "pattern", pattern)
+			slog.Info("Registering API", "method", m, "pattern", api.Input.Path)
+			r.MethodFunc(m, api.Input.Path, handler)
 		}
 	}
 	return nil
@@ -144,17 +146,13 @@ func (api *ProxyAPI) ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w2 := &writer{w: w}
-	//	r.Host = api.remote.Host
-	// w.Header().Set("X-Ben", "Rad")
 	api.Proxy.remote.ServeHTTP(w2, r)
-	// slog.Info("Proxy response", "status", w2.Status)
 	slog.Info(fmt.Sprintf("Proxy url: %s %s", r.Method, r.URL), "status", w2.Status)
 }
 
 func (api *ProxyAPI) Mapper(r *http.Request) func(string) (string, bool) {
 	return func(key string) (string, bool) {
-		// slog.Info("mapping key", "key", key)
-		if v := r.PathValue(key); v != "" {
+		if v := chi.URLParam(r, key); v != "" {
 			return v, true
 		}
 		if v := r.URL.Query().Get(key); v != "" {

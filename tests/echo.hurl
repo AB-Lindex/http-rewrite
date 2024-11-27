@@ -11,6 +11,14 @@ jsonpath "$.Method" == "GET"
 jsonpath "$.Request" == "/any/path?lang=sv"
 
 
+GET http://localhost:8081/sv2/any/path
+HTTP 402
+
+
+GET http://localhost:8081/12/any/path
+HTTP 402
+
+
 GET http://localhost:8081/sv/any/path?lang=old
 HTTP 200
 [Asserts]

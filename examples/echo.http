@@ -2,19 +2,20 @@
 ###
 GET {{base}}/test1/test2
 ###
-GET {{base}}/test1/test2/test3
+GET {{base}}/ab/test2
 ###
-GET {{base}}/test1/test2/test3/test4
-
+GET {{base}}/xx/test2/test3
 ###
-GET {{base}}/test1/test2
+GET {{base}}/12/test2/test3/test4
+###
+GET {{base}}/sv/test2
   ?arg1=1
 ###
-GET {{base}}/test1/test2
+GET {{base}}/sv/test2
   ?arg1=1
   &lang=oldLang
 ###
-PUT {{base}}/test1/test2
+PUT {{base}}/sv/test2
   ?arg1=1
   &lang=oldLang
 ###
