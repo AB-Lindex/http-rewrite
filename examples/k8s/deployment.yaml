@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: main
+          image: lindex/http-https-echo:v0.1.0
+          # ports:
+          #   - containerPort: 10000
+          # ports are not exposed here, because it's the rewrite-sidecar that takes the calls
+
+        - name: rewrite-sidecar
+          image: lindex/http-rewrite:v0.3.0
+          ports:
+            - containerPort: 8081
+
+          volumeMounts:
+            - name: rewrite-config
+              mountPath: /config.yaml
+              subPath: config.yaml
+
+      volumes:
+        - name: rewrite-config
+          configMap:
+            name: myapp-rewrite-config
