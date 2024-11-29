@@ -120,7 +120,7 @@ func (api *ProxyAPI) ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	if api.Proxy.Path != "" {
 		newpath, err := envsubst.ConvertString(api.Proxy.Path, mapper)
 		if err != nil {
-			slog.Error("Failed to substitute path", "error", err)
+			slog.Error("Failed to substitute path", "error", err, "request", r.URL.Path)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -134,7 +134,7 @@ func (api *ProxyAPI) ProxyHandler(w http.ResponseWriter, r *http.Request) {
 			for k, v := range api.Proxy.Query.Set {
 				newV, err := envsubst.ConvertString(v, mapper)
 				if err != nil {
-					slog.Error("Failed to substitute query", "param", k, "error", err)
+					slog.Error("Failed to substitute query", "param", k, "error", err, "request", r.URL.Path)
 					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
@@ -157,6 +157,9 @@ func (api *ProxyAPI) Mapper(r *http.Request) func(string) (string, bool) {
 		}
 		if v := r.URL.Query().Get(key); v != "" {
 			return v, true
+		}
+		if key == "*" {
+			return "", true
 		}
 		return "", false
 	}
